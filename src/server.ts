@@ -22,6 +22,7 @@ app.post('/users/create', async (request, response) => {
 
     return response.json(user);
   } catch (error) {
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying to create this user.' });
   }
 });
@@ -42,6 +43,8 @@ app.get('/users/:userId', async (request, response) => {
 
     return response.json(user);
   } catch (error) {
+    console.error(error);
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying to get this user.' });
   }
 });
@@ -70,6 +73,7 @@ app.post('/user/cookies/:userId', async (request, response) => {
 
     return response.json(cookie);
   } catch (error) {
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying to update user cookies.' });
   }
 });
@@ -88,6 +92,7 @@ app.get('/user/cookies/:userId', async (request, response) => {
 
     return response.json({ quantity: cookie.quantity });
   } catch (error) {
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying to get cookies for this user.' });
   }
 });
@@ -115,6 +120,7 @@ app.get('/users/top-cookies', async (request, response) => {
 
     return response.json(topUsersData);
   } catch (error) {
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying to get top cookies users.' });
   }
 });
@@ -135,6 +141,7 @@ app.get('/users/name/:name', async (request, response) => {
 
     return response.json(user);
   } catch (error) {
+    console.error(error);
     return response.status(500).json({ error: 'An error ocurred when trying get user by name.' });
   }
 });
