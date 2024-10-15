@@ -17,16 +17,7 @@ model User {
   displayName      String
   description      String
   hasVerifiedBadge Boolean
-  cookies          Cookie?
-  
-  @@map("users")
-}
+  cookies          Int     @default(0) // Adiciona cookies como int
 
-model Cookie {
-  id       String @id @default(uuid())
-  quantity Int
-  user     User   @relation(fields: [userId], references: [id])
-  userId   String @unique
-  
-  @@map("cookies")
+  @@map("users")
 }

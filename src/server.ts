@@ -7,142 +7,89 @@ app.use(express.json());
 const port = process.env.PORT ?? 4000;
 
 app.post('/users/create', async (request, response) => {
-  const { description, hasVerifiedBadge, userId, name, displayName } = request.body;
-
+  const { userId, name, displayName, description, hasVerifiedBadge } = request.body;
   try {
     const user = await prismaClient.user.create({
       data: {
-        description,
-        hasVerifiedBadge,
         userId,
         name,
         displayName,
+        description,
+        hasVerifiedBadge,
+        cookies: 0, // Inicializa com 0 cookies
       },
     });
-
-    return response.json(user);
+    return response.status(201).json(user);
   } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying to create this user.' });
+    console.error('Erro ao criar usuário:', error);
+    return response.status(500).json({ error: 'Erro ao criar usuário.' });
   }
 });
 
 app.get('/users/:userId', async (request, response) => {
-  const { userId } = request.params;
-
+  const userId = parseInt(request.params.userId);
   try {
     const user = await prismaClient.user.findUnique({
-      where: {
-        userId: parseInt(userId),
-      },
+      where: { userId },
     });
-
     if (!user) {
-      return response.status(404).json({ error: 'User not found.' });
+      return response.status(404).json({ error: 'Usuário não encontrado.' });
     }
-
     return response.json(user);
   } catch (error) {
-    console.error(error);
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying to get this user.' });
+    console.error('Erro ao buscar usuário:', error);
+    return response.status(500).json({ error: 'Erro ao buscar usuário.' });
   }
 });
 
-app.post('/user/cookies/:userId', async (request, response) => {
-  const { userId } = request.params;
+app.post('/users/cookies/:userId', async (request, response) => {
+  const userId = parseInt(request.params.userId);
   const { quantity } = request.body;
 
   try {
-    const user = await prismaClient.user.findUnique({
-      where: { userId: parseInt(userId) },
-    });
-
-    if (!user) {
-      return response.status(404).json({ error: 'User not found.' });
-    }
-
-    const cookie = await prismaClient.cookie.upsert({
-      where: { userId: user.id },
-      update: { quantity: { increment: quantity } },
-      create: {
-        userId: user.id,
-        quantity,
+    const user = await prismaClient.user.update({
+      where: { userId },
+      data: {
+        cookies: {
+          increment: quantity, // Incrementa o valor de cookies
+        },
       },
     });
-
-    return response.json(cookie);
+    return response.json(user);
   } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying to update user cookies.' });
-  }
-});
-
-app.get('/user/cookies/:userId', async (request, response) => {
-  const { userId } = request.params;
-
-  try {
-    const cookie = await prismaClient.cookie.findUnique({
-      where: { userId: userId },
-    });
-
-    if (!cookie) {
-      return response.status(404).json({ error: 'Cookies not found for this user.' });
-    }
-
-    return response.json({ quantity: cookie.quantity });
-  } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying to get cookies for this user.' });
+    console.error('Erro ao atualizar cookies:', error);
+    return response.status(500).json({ error: 'Erro ao atualizar cookies.' });
   }
 });
 
 app.get('/users/top-cookies', async (request, response) => {
   try {
-    const topUsers = await prismaClient.cookie.findMany({
+    const topUsers = await prismaClient.user.findMany({
       orderBy: {
-        quantity: 'desc',
+        cookies: 'desc', // Ordena pela quantidade de cookies
       },
-      take: 10,
-      include: {
-        user: true,
-      },
+      take: 10, // Limita a 10 usuários
     });
-
-    const topUsersData = topUsers.map((cookie) => ({
-      userId: cookie.user.userId,
-      name: cookie.user.name,
-      displayName: cookie.user.displayName,
-      description: cookie.user.description,
-      hasVerifiedBadge: cookie.user.hasVerifiedBadge,
-      cookies: cookie.quantity,
-    }));
-
-    return response.json(topUsersData);
+    return response.json(topUsers);
   } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying to get top cookies users.' });
+    console.error('Erro ao buscar top usuários:', error);
+    return response.status(500).json({ error: 'Erro ao buscar top usuários.' });
   }
 });
 
 app.get('/users/name/:name', async (request, response) => {
   const { name } = request.params;
-
   try {
     const user = await prismaClient.user.findFirst({
-      where: {
-        OR: [{ name: name }, { displayName: name }],
-      },
+      where: { name },
     });
-
     if (!user) {
-      return response.status(404).json({ error: 'User not found.' });
+      return response.status(404).json({ error: 'Usuário não encontrado.' });
     }
-
     return response.json(user);
   } catch (error) {
-    console.error(error);
-    return response.status(500).json({ error: 'An error ocurred when trying get user by name.' });
+    console.error('Erro ao buscar usuário pelo nome:', error);
+    return response.status(500).json({ error: 'Erro ao buscar usuário.' });
   }
 });
 
