@@ -9,7 +9,7 @@ const port = process.env.PORT ?? 4000;
 app.post('/users/create', async (request, response) => {
   const { description, hasVerifiedBadge, userId, name, displayName } = request.body;
 
-  console.log('Payload', request.body);
+  console.log('PrismaClient', prismaClient);
 
   try {
     const user = await prismaClient.user.create({
