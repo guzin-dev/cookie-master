@@ -56,7 +56,7 @@ app.post('/user/cookies/:userId', async (request, response) => {
     });
 
     if (!user) {
-      return response.status(404).json({ error: 'Usuário não encontrado.' });
+      return response.status(404).json({ error: 'User not found.' });
     }
 
     const cookie = await prismaClient.cookie.upsert({
@@ -70,7 +70,7 @@ app.post('/user/cookies/:userId', async (request, response) => {
 
     return response.json(cookie);
   } catch (error) {
-    return response.status(500).json({ error: 'Erro ao atualizar cookies.' });
+    return response.status(500).json({ error: 'An error ocurred when trying to update user cookies.' });
   }
 });
 
@@ -83,12 +83,59 @@ app.get('/user/cookies/:userId', async (request, response) => {
     });
 
     if (!cookie) {
-      return response.status(404).json({ error: 'Cookies não encontrados para este usuário.' });
+      return response.status(404).json({ error: 'Cookies not found for this user.' });
     }
 
     return response.json({ quantity: cookie.quantity });
   } catch (error) {
-    return response.status(500).json({ error: 'Erro ao buscar cookies.' });
+    return response.status(500).json({ error: 'An error ocurred when trying to get cookies for this user.' });
+  }
+});
+
+app.get('/users/top-cookies', async (request, response) => {
+  try {
+    const topUsers = await prismaClient.cookie.findMany({
+      orderBy: {
+        quantity: 'desc',
+      },
+      take: 10,
+      include: {
+        user: true,
+      },
+    });
+
+    const topUsersData = topUsers.map((cookie) => ({
+      userId: cookie.user.userId,
+      name: cookie.user.name,
+      displayName: cookie.user.displayName,
+      description: cookie.user.description,
+      hasVerifiedBadge: cookie.user.hasVerifiedBadge,
+      cookies: cookie.quantity,
+    }));
+
+    return response.json(topUsersData);
+  } catch (error) {
+    return response.status(500).json({ error: 'An error ocurred when trying to get top cookies users.' });
+  }
+});
+
+app.get('/users/name/:name', async (request, response) => {
+  const { name } = request.params;
+
+  try {
+    const user = await prismaClient.user.findFirst({
+      where: {
+        OR: [{ name: name }, { displayName: name }],
+      },
+    });
+
+    if (!user) {
+      return response.status(404).json({ error: 'User not found.' });
+    }
+
+    return response.json(user);
+  } catch (error) {
+    return response.status(500).json({ error: 'An error ocurred when trying get user by name.' });
   }
 });
 
