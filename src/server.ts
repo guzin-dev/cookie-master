@@ -6,7 +6,7 @@ app.use(express.json());
 
 const port = process.env.PORT ?? 4000;
 
-app.post('/users/create', async (request, response) => {
+app.post('/users/create/user', async (request, response) => {
   const { userId, name, displayName, description, hasVerifiedBadge } = request.body;
   try {
     const user = await prismaClient.user.create({
@@ -62,7 +62,7 @@ app.post('/users/cookies/:userId', async (request, response) => {
   }
 });
 
-app.get('/users/top-cookies', async (request, response) => {
+app.get('/users/cookies/top-cookies', async (request, response) => {
   try {
     const topUsers = await prismaClient.user.findMany({
       take: 10,
