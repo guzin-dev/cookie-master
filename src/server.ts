@@ -9,12 +9,13 @@ const app = express();
 app.use(express.json());
 
 const port = process.env.PORT ?? 4000;
+const AUTH_CODE = process.env.AUTH_CODE;
 
 const authMiddleware = (req: any, res: any, next: any) => {
   const authCode = req.headers['authorization'];
 
   console.log(authCode);
-  console.log(process.env.AUTH_CODE);
+  console.log(AUTH_CODE);
 
   if (authCode === process.env.AUTH_CODE) {
     console.log('TEste');
