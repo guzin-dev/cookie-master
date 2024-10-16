@@ -9,7 +9,11 @@ const port = process.env.PORT ?? 4000;
 const authMiddleware = (req: any, res: any, next: any) => {
   const authCode = req.headers['authorization'];
 
+  console.log(authCode);
+  console.log(process.env.AUTH_CODE);
+
   if (authCode === process.env.AUTH_CODE) {
+    console.log('TEste');
     next();
   } else {
     return res.status(403).json({ error: 'Acesso negado. Código de autorização inválido.' });
