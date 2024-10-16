@@ -6,6 +6,18 @@ app.use(express.json());
 
 const port = process.env.PORT ?? 4000;
 
+const authMiddleware = (req: any, res: any, next: any) => {
+  const authCode = req.headers['authorization'];
+
+  if (authCode === process.env.AUTH_CODE) {
+    next();
+  } else {
+    return res.status(403).json({ error: 'Acesso negado. Código de autorização inválido.' });
+  }
+};
+
+app.use(authMiddleware);
+
 app.post('/users/create/user', async (request, response) => {
   const { userId, name, displayName, description, hasVerifiedBadge } = request.body;
   try {
@@ -16,7 +28,7 @@ app.post('/users/create/user', async (request, response) => {
         displayName,
         description,
         hasVerifiedBadge,
-        cookies: 0, // Inicializa com 0 cookies
+        cookies: 0,
       },
     });
     return response.status(201).json(user);
