@@ -84,7 +84,7 @@ app.get('/users/name/:name', async (request, response) => {
   try {
     const user = await prismaClient.user.findFirst({
       where: {
-        OR: [{ name: { startsWith: name } }, { displayName: { startsWith: name } }],
+        OR: [{ name: name }, { displayName: name }],
       },
     });
     if (!user) {
