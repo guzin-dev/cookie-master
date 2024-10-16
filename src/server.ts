@@ -14,14 +14,10 @@ const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const authMiddleware = (req: any, res: any, next: any) => {
   const authCode = req.headers['authorization'];
 
-  console.log(authCode);
-  console.log(AUTH_TOKEN);
-
   if (authCode === process.env.AUTH_TOKEN) {
-    console.log('TEste');
     next();
   } else {
-    return res.status(403).json({ error: 'Acesso negado. Código de autorização inválido.' });
+    return res.status(403).json({ error: 'Access Denied.' });
   }
 };
 
@@ -42,8 +38,8 @@ app.post('/users/create/user', async (request, response) => {
     });
     return response.status(201).json(user);
   } catch (error) {
-    console.error('Erro ao criar usuário:', error);
-    return response.status(500).json({ error: 'Erro ao criar usuário.' });
+    console.error('Error while creating user:', error);
+    return response.status(500).json({ error: 'Error while creating user.' });
   }
 });
 
@@ -54,12 +50,12 @@ app.get('/users/:userId', async (request, response) => {
       where: { userId },
     });
     if (!user) {
-      return response.status(404).json({ error: 'Usuário não encontrado.' });
+      return response.status(404).json({ error: 'User not found.' });
     }
     return response.json(user);
   } catch (error) {
-    console.error('Erro ao buscar usuário:', error);
-    return response.status(500).json({ error: 'Erro ao buscar usuário.' });
+    console.error('Error while trying to search user:', error);
+    return response.status(500).json({ error: 'Error while trying to search user.' });
   }
 });
 
@@ -73,7 +69,7 @@ app.post('/users/cookies/:userId', async (request, response) => {
     });
 
     if (!user) {
-      return response.status(404).json({ error: 'Usuário não encontrado.' });
+      return response.status(404).json({ error: 'User not found.' });
     }
 
     const updatedUser = await prismaClient.user.update({
@@ -83,8 +79,8 @@ app.post('/users/cookies/:userId', async (request, response) => {
 
     return response.json(updatedUser);
   } catch (error) {
-    console.error('Erro ao atualizar os cookies do usuário:', error);
-    return response.status(500).json({ error: 'Erro ao atualizar os cookies.' });
+    console.error('Error while tying to update user cookies:', error);
+    return response.status(500).json({ error: 'Error while tying to update user cookies.' });
   }
 });
 
@@ -96,8 +92,8 @@ app.get('/users/cookies/top-cookies', async (request, response) => {
     });
     return response.json(topUsers);
   } catch (error) {
-    console.error('Erro ao buscar top usuários:', error);
-    return response.status(500).json({ error: 'Erro ao buscar top usuários.' });
+    console.error('Error while trying to get top cookies:', error);
+    return response.status(500).json({ error: 'Error while trying to get top cookies.' });
   }
 });
 
@@ -110,12 +106,12 @@ app.get('/users/name/:name', async (request, response) => {
       },
     });
     if (!user) {
-      return response.status(404).json({ error: 'Usuário não encontrado.' });
+      return response.status(404).json({ error: 'User not found.' });
     }
     return response.json(user);
   } catch (error) {
-    console.error('Erro ao buscar usuário pelo nome:', error);
-    return response.status(500).json({ error: 'Erro ao buscar usuário.' });
+    console.error('Error while trying to find user by name:', error);
+    return response.status(500).json({ error: 'Error while trying to search user.' });
   }
 });
 
