@@ -65,9 +65,11 @@ app.post('/users/cookies/:userId', async (request, response) => {
 app.get('/users/top-cookies', async (request, response) => {
   try {
     const topUsers = await prismaClient.user.findMany({
-      orderBy: {
-        cookies: 'desc', // Ordena pela quantidade de cookies
-      },
+      orderBy: [
+        {
+          cookies: 'desc', // Ordena pela quantidade de cookies
+        },
+      ],
       take: 10, // Limita a 10 usuários
     });
     return response.json(topUsers);
@@ -81,7 +83,7 @@ app.get('/users/name/:name', async (request, response) => {
   const { name } = request.params;
   try {
     const user = await prismaClient.user.findFirst({
-      where: { name },
+      where: { name: name },
     });
     if (!user) {
       return response.status(404).json({ error: 'Usuário não encontrado.' });
