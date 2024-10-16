@@ -65,12 +65,8 @@ app.post('/users/cookies/:userId', async (request, response) => {
 app.get('/users/top-cookies', async (request, response) => {
   try {
     const topUsers = await prismaClient.user.findMany({
-      orderBy: [
-        {
-          cookies: 'desc',
-        },
-      ],
       take: 10,
+      orderBy: { cookies: 'desc' },
     });
     return response.json(topUsers);
   } catch (error) {
