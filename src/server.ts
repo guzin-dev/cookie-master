@@ -43,22 +43,27 @@ app.get('/users/:userId', async (request, response) => {
 });
 
 app.post('/users/cookies/:userId', async (request, response) => {
-  const userId = parseInt(request.params.userId);
+  const { userId } = request.params;
   const { quantity } = request.body;
 
   try {
-    const user = await prismaClient.user.update({
-      where: { userId },
-      data: {
-        cookies: {
-          increment: quantity,
-        },
-      },
+    const user = await prismaClient.user.findUnique({
+      where: { userId: parseInt(userId) },
     });
-    return response.json(user);
+
+    if (!user) {
+      return response.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    const updatedUser = await prismaClient.user.update({
+      where: { userId: parseInt(userId) },
+      data: { cookies: quantity },
+    });
+
+    return response.json(updatedUser);
   } catch (error) {
-    console.error('Erro ao atualizar cookies:', error);
-    return response.status(500).json({ error: 'Erro ao atualizar cookies.' });
+    console.error('Erro ao atualizar os cookies do usuário:', error);
+    return response.status(500).json({ error: 'Erro ao atualizar os cookies.' });
   }
 });
 
