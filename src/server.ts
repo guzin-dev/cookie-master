@@ -24,7 +24,6 @@ const authMiddleware = (req: any, res: any, next: any) => {
 app.use(authMiddleware);
 
 app.post('/users/create/user', async (request, response) => {
-  console.log('REQUEST BODY', request.body);
   const { userId, name, displayName, description, hasVerifiedBadge } = request.body;
   try {
     const user = await prismaClient.user.create({
